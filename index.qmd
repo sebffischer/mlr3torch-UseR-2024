@@ -34,16 +34,6 @@ format:
 
 
 ```{r setup, include = FALSE}
-if (FALSE) {
-    remotes::install_github("mitchelloharawild/icons")
-    icons::download_fontawesome()
-    icons::download_academicons()
-}
-
-library("mlr3verse")
-library("ggplot2")
-library("knitr")
-requireNamespace("GGally")
 options(
     datatable.print.class = FALSE,
     datatable.print.keys = FALSE,
