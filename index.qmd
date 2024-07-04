@@ -13,7 +13,7 @@ bibliography: references.bib
 
 <h3> Sebastian Fischer, Martin Binder, Prof. Dr. Bernd Bischl and others</h3>
 
-<h3> 20234-07-10 </h3>
+<h3> 2024-07-10 </h3>
 <br>
 
 ![](images/lmu-logo.png){.absolute top=425 left=1100 width="300"}
