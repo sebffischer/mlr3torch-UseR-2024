@@ -26,23 +26,8 @@ jobs:
         with:
           r-version: '4.3.1'
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages:
-            any::here
-            any::mlr3pipelines
-            any::torch
-            any::mlr3
-            any::remotes
+      - uses: r-lib/actions/setup-renv@v2
 
-      - name: Install remotes package
-        run: |
-          Rscript -e 'install.packages("remotes")'
-
-      - name: Install mlr3torch from GitHub
-        run: |
-          Rscript -e 'remotes::install_github("mlr-org/mlr3torch")'
-      
       - name: Publish to GitHub Pages (and render)
         uses: quarto-dev/quarto-actions/publish@v2
         with:
