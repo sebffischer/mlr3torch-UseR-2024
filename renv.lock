@@ -4,7 +4,7 @@
     "Repositories": [
       {
         "Name": "CRAN",
-        "URL": "https://cloud.r-project.org"
+        "URL": "https://ftp.fau.de/cran"
       }
     ]
   },
@@ -902,14 +902,9 @@
     },
     "mlr3": {
       "Package": "mlr3",
-      "Version": "0.20.0.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "mlr3",
-      "RemoteUsername": "mlr-org",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "abbd87bf1f5cda45ccc85f81564a28063e3eade2",
+      "Version": "0.20.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -929,18 +924,13 @@
         "parallelly",
         "uuid"
       ],
-      "Hash": "c2d22145fe489c0c855d49529436282a"
+      "Hash": "7376b03e059a2f316da22bf960996a76"
     },
     "mlr3cluster": {
       "Package": "mlr3cluster",
-      "Version": "0.1.8.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "mlr3cluster",
-      "RemoteUsername": "mlr-org",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "29c80ff9a7020e031b845b61ac62209a3f6f3f49",
+      "Version": "0.1.9",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -955,7 +945,7 @@
         "paradox",
         "stats"
       ],
-      "Hash": "68afc567f4ffea08b141585f3701adab"
+      "Hash": "39b1db7adb1248dc12da4cf1693d83ca"
     },
     "mlr3data": {
       "Package": "mlr3data",
@@ -1023,7 +1013,7 @@
     },
     "mlr3learners": {
       "Package": "mlr3learners",
-      "Version": "0.7.0",
+      "Version": "0.5.8.9000",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1035,18 +1025,13 @@
         "mlr3misc",
         "paradox"
       ],
-      "Hash": "121940d0b919f5eba801ada1af6f198b"
+      "Hash": "a25296eef48c3f0df5274bb6a4a19fdd"
     },
     "mlr3mbo": {
       "Package": "mlr3mbo",
-      "Version": "0.2.1.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "mlr3mbo",
-      "RemoteUsername": "mlr-org",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "520622de10a518b4c52a128b79398960dc7e6e09",
+      "Version": "0.2.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -1060,7 +1045,7 @@
         "paradox",
         "spacefillr"
       ],
-      "Hash": "8126b93d3f11c5da77a8e6a38b4a3df5"
+      "Hash": "96ab2639d6d8023db3fe6e862ed24c1b"
     },
     "mlr3measures": {
       "Package": "mlr3measures",
@@ -1093,13 +1078,8 @@
     "mlr3pipelines": {
       "Package": "mlr3pipelines",
       "Version": "0.6.0",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "mlr3pipelines",
-      "RemoteUsername": "mlr-org",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "c542a2687d77c9145f28b827694643ad3031d3f0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -1113,7 +1093,7 @@
         "paradox",
         "withr"
       ],
-      "Hash": "de4abd3e5bfeb8c890e26254e61da7ea"
+      "Hash": "4377f534ff568943e8ab56af58c0e65a"
     },
     "mlr3torch": {
       "Package": "mlr3torch",
@@ -1124,7 +1104,7 @@
       "RemoteUsername": "mlr-org",
       "RemoteRepo": "mlr3torch",
       "RemoteRef": "main",
-      "RemoteSha": "cc1066a46190c22f281df20d0a5a70ecb523b4aa",
+      "RemoteSha": "e3d2a7e382c773446a3e61f7ae3f78ac982bd372",
       "Requirements": [
         "R",
         "R6",
@@ -1140,7 +1120,7 @@
         "torch",
         "withr"
       ],
-      "Hash": "4b5cdcbba6e8ad74e074ed27e674d610"
+      "Hash": "d47b9a5ec3dcbf47cd3222a23633e8d2"
     },
     "mlr3tuning": {
       "Package": "mlr3tuning",
@@ -1210,14 +1190,9 @@
     },
     "mlr3viz": {
       "Package": "mlr3viz",
-      "Version": "0.6.1.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteUsername": "mlr-org",
-      "RemoteRepo": "mlr3viz",
-      "RemoteRef": "main",
-      "RemoteSha": "70a01cc5ecc2430bc899c81ca02de8081efd0899",
+      "Version": "0.9.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "checkmate",
@@ -1228,7 +1203,7 @@
         "utils",
         "viridis"
       ],
-      "Hash": "556fbfda71a6183a3f22e34240b4e343"
+      "Hash": "7f551adf4e2419d42adfe075921d72c8"
     },
     "modeltools": {
       "Package": "modeltools",
@@ -1741,17 +1716,16 @@
     },
     "viridis": {
       "Package": "viridis",
-      "Version": "0.6.2",
+      "Version": "0.6.5",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "ggplot2",
         "gridExtra",
-        "stats",
         "viridisLite"
       ],
-      "Hash": "ee96aee95a7a563e5496f8991e9fde4b"
+      "Hash": "acd96d9fa70adeea4a5a1150609b9745"
     },
     "viridisLite": {
       "Package": "viridisLite",
