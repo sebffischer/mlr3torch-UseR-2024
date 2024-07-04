@@ -143,14 +143,9 @@
     },
     "bbotk": {
       "Package": "bbotk",
-      "Version": "1.0.0.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "bbotk",
-      "RemoteUsername": "mlr-org",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "616993b167f6fd10ba3b45926858c328a5f5c52b",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -161,7 +156,7 @@
         "mlr3misc",
         "paradox"
       ],
-      "Hash": "9c01d058be98880c14dfa8a95fd58e93"
+      "Hash": "34fddeab7eb97dbefa4d0d9b9efde7c2"
     },
     "bit": {
       "Package": "bit",
@@ -1028,7 +1023,7 @@
     },
     "mlr3learners": {
       "Package": "mlr3learners",
-      "Version": "0.5.8.9000",
+      "Version": "0.7.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1040,7 +1035,7 @@
         "mlr3misc",
         "paradox"
       ],
-      "Hash": "a25296eef48c3f0df5274bb6a4a19fdd"
+      "Hash": "121940d0b919f5eba801ada1af6f198b"
     },
     "mlr3mbo": {
       "Package": "mlr3mbo",
@@ -1149,14 +1144,9 @@
     },
     "mlr3tuning": {
       "Package": "mlr3tuning",
-      "Version": "1.0.0.9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "mlr3tuning",
-      "RemoteUsername": "mlr-org",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "3da9fe4ed6148c37220a2248b3f331fb21d48c84",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R",
         "R6",
@@ -1168,7 +1158,7 @@
         "mlr3misc",
         "paradox"
       ],
-      "Hash": "12bd2ebb7ae086c9b5a6390d2eb7faa9"
+      "Hash": "1e725cff61c253b0e109c0ca2cf527b4"
     },
     "mlr3tuningspaces": {
       "Package": "mlr3tuningspaces",
@@ -1301,14 +1291,9 @@
     },
     "paradox": {
       "Package": "paradox",
-      "Version": "1.0.0-9000",
-      "Source": "GitHub",
-      "RemoteType": "github",
-      "RemoteHost": "api.github.com",
-      "RemoteRepo": "paradox",
-      "RemoteUsername": "mlr-org",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "7f2520c660d1f6a1ce4a1f66f3c4dd1743a17e5e",
+      "Version": "1.0.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
       "Requirements": [
         "R6",
         "backports",
@@ -1317,7 +1302,7 @@
         "methods",
         "mlr3misc"
       ],
-      "Hash": "50e2c502bf4eae1532e22d06feb5126c"
+      "Hash": "6a9622cb47105eab7137c961934527b2"
     },
     "parallelly": {
       "Package": "parallelly",
