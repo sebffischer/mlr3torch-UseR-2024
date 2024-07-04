@@ -1,8 +1,8 @@
 project:
   output-dir: _output
 
-toc: true
-number-sections: true
+toc: false
+number-sections: false
 bibliography: references.bib  
 format:
   revealjs:

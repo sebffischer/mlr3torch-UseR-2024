@@ -77,7 +77,7 @@ should be easily understandable without a focus on the code.
 
 * The `mlr3`^[M. Lang and B. Bischl et al, JOSS, 2021] package is the base package of the `mlr3` ecosystem, which is a collection of R packages providing a unified interface to machine learning in R.
 * High level of flexibility, yet easy ways to use advanced functionality like hyperparameter tuning, complex preprocessing, or parallelization.
-* Predominantly uses the `R6` class system.
+* Predominantly uses the `R6` class system (reference semantics).
 * GitHub: [https://github.com/mlr-org/mlr3](https://github.com/mlr-org/mlr3)
 
 ## The `mlr3` Ecosystem
@@ -158,7 +158,7 @@ rr$aggregate(msr("regr.mse"))
 :::
 :::{.column width="50%"}
 * `mlr3pipelines`^[M. Binder and B. Bischl et al, JMLR, 2021] allows assemble new `Learner`s by connecting `PipeOp`s in a `Graph`, e.g. for preprocessing
-* `PipeOp`s are created via `po()`, and combined using `%>>%`
+* `PipeOp`s are created via `po()`, and combined using the chain operator `%>>%`
 <br>
 
 ```{r, output = FALSE}
@@ -188,7 +188,7 @@ mlr3pipelines (Binder et al. 2021) takes this modularity one step further, exten
 ![](images/torch.png){.absolute top=-50 left=1300 width="100"}
 
 :::{.columns}
-:::{.column width="40%"}
+:::{.column width="60%"}
 * Support for GPU accelerated tensor operations
 * An autograd system
 * Provides many tensor operations and optimizers
@@ -198,7 +198,7 @@ mlr3pipelines (Binder et al. 2021) takes this modularity one step further, exten
 
 :::
 
-:::{.column width="60%"}
+:::{.column width="40%"}
 ```{r}
 library(torch)
 x = torch_tensor(1, requires_grad = TRUE)
@@ -219,8 +219,8 @@ b$grad
 ![](images/mlr3torch-logo.svg){.absolute top=-50 left=1300 width="100"}
 
 - Task Types:
-    - classification 
-    - regression
+    - Classification 
+    - Regression
     
 - Learners:
     - Off-the-shelf architectures as predefined `Learner`s
@@ -228,16 +228,16 @@ b$grad
     - Customization of training via a callback mechanism
     
 - Data Types:
-    - tabular data
-    - generic `torch_tensor`s
-    - Well suited for multi-modal data
+    - Tabular data
+    - Generic `torch_tensor`s
+    - Multi-modal data
 
 ## Predefined architectures
 
 :::{.columns}
 
 ::: {.column width="50%"}
-* On the right, we construct and resample a multi layer perceptron with one hidden layer of size 20 and `ReLU` activation
+* On the right, we construct and resample a multi layer perceptron with one hidden layer of size 10 and `ReLU` activation
 * Then, we define a simple benchmark experiment that compares the neural network with the decision tree from earlier
 * For this task, the neural network seems to be the wrong choice!
 :::
@@ -248,7 +248,7 @@ library(mlr3torch)
 lrn_mlp = lrn("regr.mlp",
   # defining the architecture
   activation     = torch::nn_relu,
-  neurons        = 5,
+  neurons        = 10,
   # training parameters
   batch_size     = 32,
   epochs         = 100,
@@ -259,7 +259,9 @@ lrn_mlp = lrn("regr.mlp",
   callbacks      = t_clbk("history")
 )
 
-design = benchmark_grid(tsk_mtcars, list(lrn_mlp, lrn_tree), rsmp_cv)
+design = benchmark_grid(
+  tsk_mtcars, list(lrn_mlp, lrn_tree), rsmp_cv
+)
 bmr = benchmark(design)
 bmr$aggregate(msr("regr.mse"))
 ```
@@ -308,8 +310,8 @@ lrn_mlp_graph$predict_sets = character()
 :::{.column width="50%"}
 * The images of the MNIST task are represented as `lazy_tensor`s, which wrap a `torch::dataset` that does not necessarily have to store the data in-memory
 * We have to reshape the MNIST images to work with our MLP that expects 2d inputs
-* The preprocessing of `lazy_tensor`s happens lazily by internally building up a preprocessing `Graph` that
-* We can cmbine the flattening step with our previous graph into a new `GraphLearner`
+* The preprocessing of `lazy_tensor`s happens lazily by internally building up a preprocessing `Graph`
+* We can combine the flattening step with our previous graph into a new `GraphLearner`
 :::
 :::{.column width="50%"}
 ```{r}
@@ -333,7 +335,7 @@ lrn_flat_mlp$train(tsk_mnist)
 :::{.column width="40%"}
 
 * The resulting `GraphLearner` has a parameter set representing all configuration options, which can be tuned!
-* Here, we optimize the latent dimension of the network and the learning rate of the optimizer
+* Here, we optimize the latent dimension of the network and the learning rate of the optimizer using Bayesian Optimization from `mlr3mbo`.
 
 :::
 :::{.column width="60%"}
@@ -365,5 +367,5 @@ tune(
 
 * This presentation: [https://github.com/sebffischer/mlr3torch-UseR-2024](https://github.com/sebffischer/mlr3torch-UseR-2024)
 * The mlr3 book: [https://mlr3book.mlr-org.com/](https://mlr3book.mlr-org.com/)
-* The mlr-org website: [https://mlr-org.com/](https://mlr-org.com/)
-* The `mlr3torch` package website [https://mlr3torch.mlr-org.com/](https://mlr3torch.mlr-org.com/)
+* The mlr3 website: [https://mlr-org.com/](https://mlr-org.com/)
+* The mlr3torch package website [https://mlr3torch.mlr-org.com/](https://mlr3torch.mlr-org.com/)
