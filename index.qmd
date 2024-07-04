@@ -3,18 +3,6 @@ pagettitle: "`mlr3torch`"
 subtitle: "Deep Learning in R with mlr3 and torch"
 author: "Sebastian Fischer, Martin Binder, Bernd Bischl and others"
 bibliography: references.bib
-format:
-  revealjs:
-    theme:
-      - simple
-    logo: "images/mardi-logo.png"
-    code-copy: false
-    height: 1080
-    width: 1980
-    slide-number: c/t
-    center-title-slide: false
-    higlight-style: atom-one
-    footer: "UseR 2024"
 ---
 
 <h1> `mlr3torch` </h1>
@@ -34,6 +22,12 @@ format:
 
 
 ```{r setup, include = FALSE}
+library(mlr3)
+library(mlr3learners)
+library(mlr3torch)
+library(mlr3pipelines)
+library(torch)
+library(mlr3mbo)
 options(
     datatable.print.class = FALSE,
     datatable.print.keys = FALSE,
