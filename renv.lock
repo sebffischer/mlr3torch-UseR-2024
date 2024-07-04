@@ -815,6 +815,11 @@
       ],
       "Hash": "bfa11273fe711c8640a95b09ba51492e"
     },
+    "torchvision": {
+      "Package": "torchvision",
+      "Version": "0.6.0",
+      "Source": "Repository"
+    },
     "uuid": {
       "Package": "uuid",
       "Version": "1.2-0",
