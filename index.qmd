@@ -25,7 +25,7 @@ format:
 
 <h3> Sebastian Fischer, Martin Binder, Prof. Dr. Bernd Bischl and others</h3>
 
-<h3> 2024-07-10 </h3>
+<h3> 20234-07-10 </h3>
 <br>
 
 ![](images/lmu-logo.png){.absolute top=425 left=1100 width="300"}
@@ -70,10 +70,10 @@ knitr::opts_chunk$set(
 
   * `mlr3` - A machine learning framework in R
   * `mlr3pipelines` - A *dataflow programming* toolkit
-  * `torch` - A torch implementation written in native R
+  * `torch` - A PyTorch implementation written in native R
 
 * It allows to easily build, train and evaluate deep learning models
-* GitHub: https://github.com/mlr-org/mlr3torch
+* GitHub: [https://github.com/mlr-org/mlr3torch](https://github.com/mlr-org/mlr3torch)
 
 :::{.notes}
 While we do show code, the focus in this presentation is on the conceptual part and most of it
@@ -94,7 +94,7 @@ should be easily understandable without a focus on the code.
 * The `mlr3`^[M. Lang and B. Bischl et al, JOSS, 2021] package is the base package of the `mlr3` ecosystem, which is a collection of R packages providing a unified interface to machine learning in R.
 * High level of flexibility, yet easy ways to use advanced functionality like hyperparameter tuning, complex preprocessing, or parallelization.
 * Predominantly uses the `R6` class system.
-* GitHub: https://github.com/mlr-org/mlr3
+* GitHub: [https://github.com/mlr-org/mlr3](https://github.com/mlr-org/mlr3)
 
 ## The `mlr3` Ecosystem
 
@@ -124,7 +124,7 @@ tsk_mtcars = tsk("mtcars")
 tsk_mtcars
 ```
 
-* Define a simple logistic regression `Learner` from the {rpart} package
+* Define a simple regression tree `Learner` from the {rpart} package
   
 ```{r}
 lrn_tree = lrn("regr.rpart")
@@ -173,8 +173,8 @@ rr$aggregate(msr("regr.mse"))
 
 :::
 :::{.column width="50%"}
-* `mlr3pipelines`^[M. Binder and B. Bischl et al, JMLR, 2021] allows assemble new `Learner`s by connecting `PipeOp`s in a `Graph`
-* A `PipeOp` is created by `po(<id>)`
+* `mlr3pipelines`^[M. Binder and B. Bischl et al, JMLR, 2021] allows assemble new `Learner`s by connecting `PipeOp`s in a `Graph`, e.g. for preprocessing
+* `PipeOp`s are created via `po()`, and combined using `%>>%`
 <br>
 
 ```{r, output = FALSE}
@@ -208,9 +208,9 @@ mlr3pipelines (Binder et al. 2021) takes this modularity one step further, exten
 * Support for GPU accelerated tensor operations
 * An autograd system
 * Provides many tensor operations and optimizers
-* Extension for image processing: `torchvision`
+* Extension for images via `torchvision`
 * Developed by Daniel Falbel (Posit)
-* GitHub: https://github.com/mlverse/torch
+* GitHub: [https://github.com/mlverse/torch](https://github.com/mlverse/torch)
 
 :::
 
@@ -240,20 +240,22 @@ b$grad
     
 - Learners:
     - Off-the-shelf architectures as predefined `Learner`s
-    - custom architecture as `mlr3pipelines::Graph`s
+    - Build architectures as `mlr3pipelines::Graph`s
+    - Customization of training via a callback mechanism
     
 - Data Types:
     - tabular data
     - generic `torch_tensor`s
-    - Multi-modal data
+    - Well suited for multi-modal data
 
 ## Predefined architectures
 
 :::{.columns}
 
 ::: {.column width="50%"}
-* On the right, we construct a multi layer perceptron with one hidden layer of size 20 and `ReLU` activation
-* The constructed learner works like any other `mlr3::Learner`
+* On the right, we construct and resample a multi layer perceptron with one hidden layer of size 20 and `ReLU` activation
+* Then, we define a simple benchmark experiment that compares the neural network with the decision tree from earlier
+* For this task, the neural network seems to be the wrong choice!
 :::
 
 ::: {.column width="50%"}
@@ -262,18 +264,20 @@ library(mlr3torch)
 lrn_mlp = lrn("regr.mlp",
   # defining the architecture
   activation     = torch::nn_relu,
-  neurons        = 20,
+  neurons        = 5,
   # training parameters
-  batch_size     = 16,
-  epochs         = 5,
+  batch_size     = 32,
+  epochs         = 100,
   device         = "cpu",
   # loss, optimizer, callbacks
   loss           = t_loss("mse"),
-  optimizer      = t_opt("adam", lr = 0.1),
+  optimizer      = t_opt("adam", lr = 0.5),
   callbacks      = t_clbk("history")
 )
 
-rr = resample(tsk_mtcars, lrn_mlp, rsmp_cv)
+design = benchmark_grid(tsk_mtcars, list(lrn_mlp, lrn_tree), rsmp_cv)
+bmr = benchmark(design)
+bmr$aggregate(msr("regr.mse"))
 ```
 :::
 :::
@@ -291,7 +295,7 @@ rr = resample(tsk_mtcars, lrn_mlp, rsmp_cv)
 <br>
 
 * We can build the same architecture as before, by connecting `PipeOp`s in a `Graph`
-* This `Graph` is fully interoperable with other `PipeOp`s we have seen before
+* This `Graph` is fully interoperable with other `PipeOp`s
 
 ```{r, eval = TRUE, echo = TRUE, output = FALSE}
 mlp_graph = po("torch_ingress_ltnsr") %>>%
@@ -318,9 +322,10 @@ lrn_mlp_graph$predict_sets = character()
 
 :::{.columns}
 :::{.column width="50%"}
-* The images of the MNIST task are represnted as `lazy_tensor`s, which don't necessarily store the data in-memory
-* We have to reshape MNIST to work with our MLP, which happens lazily by internally building up a preprocessing `Graph`
-* By combining the flattening step with our previous graph, we create a new `GraphLearner` that does both
+* The images of the MNIST task are represented as `lazy_tensor`s, which wrap a `torch::dataset` that does not necessarily have to store the data in-memory
+* We have to reshape the MNIST images to work with our MLP that expects 2d inputs
+* The preprocessing of `lazy_tensor`s happens lazily by internally building up a preprocessing `Graph` that
+* We can cmbine the flattening step with our previous graph into a new `GraphLearner`
 :::
 :::{.column width="50%"}
 ```{r}
@@ -343,8 +348,8 @@ lrn_flat_mlp$train(tsk_mnist)
 :::{.columns}
 :::{.column width="40%"}
 
-* The resulting `GraphLearner` is fully parameterized
-* Hyperparameter tuning is possible through `mlr3tuning` (and friends)
+* The resulting `GraphLearner` has a parameter set representing all configuration options, which can be tuned!
+* Here, we optimize the latent dimension of the network and the learning rate of the optimizer
 
 :::
 :::{.column width="60%"}
@@ -374,6 +379,7 @@ tune(
 
 ## Learn More
 
-* Applied Machine Learning using mlr3 in R: [https://mlr3book.mlr-org.com/](https://mlr3book.mlr-org.com/)
+* This presentation: [https://github.com/sebffischer/mlr3torch-UseR-2024](https://github.com/sebffischer/mlr3torch-UseR-2024)
+* The mlr3 book: [https://mlr3book.mlr-org.com/](https://mlr3book.mlr-org.com/)
 * The mlr-org website: [https://mlr-org.com/](https://mlr-org.com/)
 * The `mlr3torch` package website [https://mlr3torch.mlr-org.com/](https://mlr3torch.mlr-org.com/)
