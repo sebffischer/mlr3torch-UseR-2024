@@ -769,8 +769,8 @@ Sebastian Fischer, Martin Binder, Prof.&nbsp;Dr.&nbsp;Bernd Bischl and others
 </div>
 </div>
 </section>
-<section id="integration-into-the-mlr3-ecosystem-tuning" class="slide level2">
-<h2>Integration into the <code>mlr3</code> ecosystem: Tuning</h2>
+<section id="integration-into-the-mlr3-ecosystem-hyperparameter-tuning" class="slide level2">
+<h2>Integration into the <code>mlr3</code> ecosystem: Hyperparameter Tuning</h2>
 <div class="columns">
 <div class="column" style="width:40%;">
 <ul>
@@ -782,17 +782,11 @@ Sebastian Fischer, Martin Binder, Prof.&nbsp;Dr.&nbsp;Bernd Bischl and others
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="fu">library</span>(mlr3tuning)</span>
 <span id="cb25-2"><a href="#cb25-2"></a><span class="fu">library</span>(mlr3mbo)</span>
 <span id="cb25-3"><a href="#cb25-3"></a></span>
-<span id="cb25-4"><a href="#cb25-4"></a><span class="fu">as.data.table</span>(lrn_flat_mlp<span class="sc">$</span>param_set)[<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">12</span>)]</span></code></pre></div>
+<span id="cb25-4"><a href="#cb25-4"></a><span class="fu">as.data.table</span>(lrn_flat_mlp<span class="sc">$</span>param_set)[<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">12</span>), <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>                       id    class lower upper levels nlevels
-1: nn_linear.out_features ParamInt     1   Inf            Inf
-2:     torch_optimizer.lr ParamDbl     0   Inf            Inf
-   is_bounded special_vals        default storage_type
-1:      FALSE    &lt;list[0]&gt; &lt;NoDefault[0]&gt;      integer
-2:      FALSE    &lt;list[0]&gt;          0.001      numeric
-             tags
-1: train,required
-2:          train</code></pre>
+<pre><code>                       id    class lower upper
+1: nn_linear.out_features ParamInt     1   Inf
+2:     torch_optimizer.lr ParamDbl     0   Inf</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>lrn_flat_mlp<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
 <span id="cb27-2"><a href="#cb27-2"></a>  <span class="at">nn_linear.out_features =</span> <span class="fu">to_tune</span>(<span class="dv">10</span>, <span class="dv">100</span>),</span>
