@@ -88,6 +88,7 @@ should be easily understandable without a focus on the code.
 * `tsk()` creates an example `Task`, where the goal is to predict the miles-per-galleon of cars
 * `lrn()` defines a simple regression tree `Learner` from the {rpart} package
 * `rsmp()` sets a `Resampling` strategy
+* `resample()` runs the resample experiment
 * `msr()` initializes an mlr3 performance `Measure`
 :::
 ::: {.column width="50%"}
@@ -132,7 +133,7 @@ rr$aggregate(msr("regr.mse"))
 
 :::
 :::{.column width="50%"}
-* `mlr3pipelines`^[M. Binder and B. Bischl et al, JMLR, 2021] allows assemble new `Learner`s by connecting `PipeOp`s in a `Graph`, e.g. for preprocessing
+* `mlr3pipelines`^[M. Binder and B. Bischl et al, JMLR, 2021] allows to assemble new `Learner`s by connecting `PipeOp`s in a `Graph`, e.g. for preprocessing
 * `PipeOp`s are created via `po()`, and combined using the chain operator `%>>%`
 <br>
 
@@ -221,14 +222,10 @@ b$grad
 ```{r}
 library(mlr3torch)
 lrn_mlp = lrn("regr.mlp",
-  # defining the architecture
   activation     = torch::nn_relu,
   neurons        = 10,
-  # training parameters
   batch_size     = 32,
   epochs         = 100,
-  device         = "cpu",
-  # loss, optimizer, callbacks
   loss           = t_loss("mse"),
   optimizer      = t_opt("adam", lr = 0.5),
   callbacks      = t_clbk("history")
@@ -244,7 +241,7 @@ bmr$aggregate(msr("regr.mse"))
 :::
 
 
-## Neural networks as `mlr3pipelines::Graph`s
+## Neural Networks as `mlr3pipelines::Graph`s
 
 :::{.columns}
 :::{.column width="50%"}
@@ -279,11 +276,46 @@ lrn_mlp_graph$param_set$set_values(
 lrn_mlp_graph$predict_sets = character()
 ```
 
+## Hyperparameter Tuning
+
+:::{.columns}
+:::{.column width="40%"}
+
+* The resulting `GraphLearner` has a parameter set representing all configuration options, which can be tuned!
+* Here, we optimize the latent dimension of the network and the learning rate of the optimizer using Bayesian Optimization from `mlr3mbo`.
+
+:::
+:::{.column width="60%"}
+```{r}
+library(mlr3tuning)
+library(mlr3mbo)
+
+as.data.table(lrn_flat_mlp$param_set)[c(5, 12), 1:4]
+lrn_flat_mlp$param_set$set_values(
+  nn_linear.out_features = to_tune(10, 100),
+  torch_optimizer.lr = to_tune(1e-05, 1e-03, logscale = TRUE)
+)
+```
+
+```{r, eval = FALSE}
+tune(
+  learner = lrn_flat_mlp,
+  task = tsk_mnist,
+  tuner = tnr("mbo"),
+  term_evals = 100L,
+  resampling = rsmp("holdout")
+)
+```
+
+:::
+:::
+
+
 ## Non-tabular data as `lazy_tensor`s
 
 :::{.columns}
 :::{.column width="50%"}
-* The images of the MNIST task are represented as `lazy_tensor`s, which wrap a `torch::dataset` that does not necessarily have to store the data in-memory
+* The images of the MNIST task are represented as `lazy_tensor`s, which wrap a `torch::dataset`
 * We have to reshape the MNIST images to work with our MLP that expects 2d inputs
 * The preprocessing of `lazy_tensor`s happens lazily by internally building up a preprocessing `Graph`
 * We can combine the flattening step with our previous graph into a new `GraphLearner`
@@ -320,8 +352,8 @@ medical_task = as_task_classif(dat, label = "Medical Diagnosis", target = "statu
 
 :::{.columns}
 ::: {.column width="50%"}
-* For example, we might have some medical data about patients, as well as x-ray images
-* Because `lazy_tensor`s are just vectors, they can be conveniently stored alongside tabular data 
+* `mlr3torch` naturally supports multi-modal data and `lazy_tensor`s can be stored in `data.frame`s
+* On the right, we have some medical data about patients, as well as x-ray images
 * `mlr3torch` supports building neural networks with multiple inputs, e.g. each operating on different features
 :::
 ::: {.column width="50%"}
@@ -369,40 +401,6 @@ graph = po("imputeoor") %>>% list(branch_num, branch_img) %>>%
 :::
 :::
 
-
-## Hyperparameter Tuning
-
-:::{.columns}
-:::{.column width="40%"}
-
-* The resulting `GraphLearner` has a parameter set representing all configuration options, which can be tuned!
-* Here, we optimize the latent dimension of the network and the learning rate of the optimizer using Bayesian Optimization from `mlr3mbo`.
-
-:::
-:::{.column width="60%"}
-```{r}
-library(mlr3tuning)
-library(mlr3mbo)
-
-as.data.table(lrn_flat_mlp$param_set)[c(5, 12), 1:4]
-lrn_flat_mlp$param_set$set_values(
-  nn_linear.out_features = to_tune(10, 100),
-  torch_optimizer.lr = to_tune(1e-05, 1e-03, logscale = TRUE)
-)
-```
-
-```{r, eval = FALSE}
-tune(
-  learner = lrn_flat_mlp,
-  task = tsk_mnist,
-  tuner = tnr("mbo"),
-  term_evals = 100L,
-  resampling = rsmp("holdout")
-)
-```
-
-:::
-:::
 
 ## Learn More
 
