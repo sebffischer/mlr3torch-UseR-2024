@@ -71,21 +71,43 @@ should be easily understandable without a focus on the code.
 * `torch` - native R library
 * `luz` - higher level deep learning library built on top of `torch`
 
-## `mlr3` in a Nutshell
-
-![](images/mlr-logo-cropped.png){.absolute top=-50 left=1300 width="100"}
-
-* The `mlr3`^[M. Lang and B. Bischl et al, JOSS, 2021] package is the base package of the `mlr3` ecosystem, which is a collection of R packages providing a unified interface to machine learning in R.
-* High level of flexibility, yet easy ways to use advanced functionality like hyperparameter tuning, complex preprocessing, or parallelization.
-* Predominantly uses the `R6` class system (reference semantics).
-* GitHub: [https://github.com/mlr-org/mlr3](https://github.com/mlr-org/mlr3)
-
 ## The `mlr3` Ecosystem
 
 <br>
 <br>
 
 ![](images/mlr3_ecosystem.png){fig-align="center"}
+
+
+## `mlr3`'s "Hello World"
+
+![](images/mlr-logo-cropped.png){.absolute top=-50 left=1300 width="100"}
+
+:::{.columns}
+::: {.column width="50%"}
+* `tsk()` creates an example `Task`, where the goal is to predict the miles-per-galleon of cars
+* `lrn()` defines a simple regression tree `Learner` from the {rpart} package
+* `rsmp()` sets a `Resampling` strategy
+* `msr()` initializes an mlr3 performance `Measure`
+:::
+::: {.column width="50%"}
+
+```{r}
+tsk_mtcars = tsk("mtcars")
+lrn_tree = lrn("regr.rpart")
+rsmp_cv = rsmp("cv", folds = 3)
+
+rr = resample(
+  task       = tsk_mtcars,
+  learner    = lrn_tree,
+  resampling = rsmp_cv
+)
+
+rr$aggregate(msr("regr.mse"))
+```
+:::
+:::
+
 
 
 
@@ -99,53 +121,6 @@ should be easily understandable without a focus on the code.
 
 :::
 
-## `mlr3`'s "Hello World"
-
-
-* Create an example `Task`, where the goal is to predict the miles-per-galleon of cars
-```{r}
-tsk_mtcars = tsk("mtcars")
-tsk_mtcars
-```
-
-* Define a simple regression tree `Learner` from the {rpart} package
-  
-```{r}
-lrn_tree = lrn("regr.rpart")
-lrn_tree
-```
-
-## `mlr3`'s "Hello World"
-
-:::{.columns}
-::: {.column width="50%"}
-<br>
-<br>
-<br>
-
-![Illustration of three-fold Cross-Validation.](images/mlr3book_figures-6.svg){fig-align="center"}
-:::
-::: {.column width="50%"}
-* Define the `Resampling` strategy
-```{r}
-rsmp_cv = rsmp("cv", folds = 3)
-rsmp_cv
-```
-* Resample the learner on the task
-```{r}
-rr = resample(
-  task       = tsk_mtcars,
-  learner    = lrn_tree,
-  resampling = rsmp_cv
-)
-rr
-```
-* Evaluate the learner using the MSE `Measure`
-```{r}
-rr$aggregate(msr("regr.mse"))
-```
-:::
-:::
 
 ## Dataflow Programming with `mlr3pipelines`
 
@@ -328,8 +303,74 @@ lrn_flat_mlp$train(tsk_mnist)
 :::
 :::
 
+## Multi Modal Data
 
-## Integration into the `mlr3` ecosystem: Hyperparameter Tuning
+```{r, include = FALSE}
+set.seed(1)
+dat = data.table(
+  age = as.double(c(NA, sample(18:60, 99, replace = TRUE))),
+  lesion_size = runif(100, 0.1, 1),
+  xray = as_lazy_tensor(torch_tensor(array(runif(100 * 3 * 64 * 64), dim = c(100, 3, 64, 64)))),
+  status = sample(c("malignant", "benign"), 100, TRUE, c(0.1, 0.9))
+)
+
+medical_task = as_task_classif(dat, label = "Medical Diagnosis", target = "status", id = "medical")
+```
+
+
+:::{.columns}
+::: {.column width="50%"}
+* For example, we might have some medical data about patients, as well as x-ray images
+* Because `lazy_tensor`s are just vectors, they can be conveniently stored alongside tabular data 
+* `mlr3torch` supports building neural networks with multiple inputs, e.g. each operating on different features
+:::
+::: {.column width="50%"}
+
+```{r}
+medical_task
+medical_task$head(3)
+```
+:::
+:::
+
+
+
+## Multi Modal Data
+
+:::{.columns}
+:::{.column width="40%"}
+![](images/complex-graph.png){fig-align="center"}
+:::
+
+:::{.column width="60%"}
+<br>
+<br>
+
+```{r, output = FALSE}
+branch_num = po("select_1", selector = selector_type("numeric")) %>>%
+  po("pca") %>>%
+  po("torch_ingress_num") %>>%
+  po("nn_linear", out_features = 20) %>>%
+  po("nn_sigmoid")
+
+branch_img = po("select_2", selector = selector_type("lazy_tensor")) %>>%
+  po("torch_ingress_ltnsr") %>>%
+  po("nn_conv2d", out_channels = 3) %>>%
+  po("nn_relu") %>>%
+  po("nn_flatten")
+
+graph = po("imputeoor") %>>% list(branch_num, branch_img) %>>%
+  po("nn_merge_cat") %>>%
+  po("nn_head") %>>%
+  po("torch_loss", t_loss("cross_entropy")) %>>%
+  po("torch_optimizer", t_opt("adam", lr = 1e-4)) %>>%
+  po("torch_model_classif", batch_size = 16, epochs = 50)
+```
+:::
+:::
+
+
+## Hyperparameter Tuning
 
 :::{.columns}
 :::{.column width="40%"}
