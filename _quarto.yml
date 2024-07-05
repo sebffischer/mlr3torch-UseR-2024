@@ -16,14 +16,14 @@ format:
     center-title-slide: false
     higlight-style: atom-one
     footer: "UseR 2024"
-  pdf:
-    theme:
-      - simple
-    logo: "images/mardi-logo.png"
-    code-copy: false
-    height: 1080
-    width: 1980
-    slide-number: c/t
-    center-title-slide: false
-    higlight-style: atom-one
-    footer: "UseR 2024"
+  # pdf:
+  #   theme:
+  #     - simple
+  #   logo: "images/mardi-logo.png"
+  #   code-copy: false
+  #   height: 1080
+  #   width: 1980
+  #   slide-number: c/t
+  #   center-title-slide: false
+  #   higlight-style: atom-one
+  #   footer: "UseR 2024"
