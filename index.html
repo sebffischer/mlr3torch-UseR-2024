@@ -442,21 +442,42 @@ Sebastian Fischer, Martin Binder, Prof.&nbsp;Dr.&nbsp;Bernd Bischl and others
 <li><code>luz</code> - higher level deep learning library built on top of <code>torch</code></li>
 </ul>
 </section>
-<section id="mlr3-in-a-nutshell" class="slide level2">
-<h2><code>mlr3</code> in a Nutshell</h2>
-<p><img data-src="images/mlr-logo-cropped.png" class="absolute" style="top: -50px; left: 1300px; width: 100px; "></p>
-<ul>
-<li>The <code>mlr3</code><sup>1</sup> package is the base package of the <code>mlr3</code> ecosystem, which is a collection of R packages providing a unified interface to machine learning in R.</li>
-<li>High level of flexibility, yet easy ways to use advanced functionality like hyperparameter tuning, complex preprocessing, or parallelization.</li>
-<li>Predominantly uses the <code>R6</code> class system (reference semantics).</li>
-<li>GitHub: <a href="https://github.com/mlr-org/mlr3">https://github.com/mlr-org/mlr3</a></li>
-</ul>
-<aside><ol class="aside-footnotes"><li id="fn1"><p>M. Lang and B. Bischl et al, JOSS, 2021</p></li></ol></aside></section>
 <section id="the-mlr3-ecosystem" class="slide level2">
 <h2>The <code>mlr3</code> Ecosystem</h2>
 <p><br> <br></p>
 
-<img data-src="images/mlr3_ecosystem.png" class="quarto-figure quarto-figure-center r-stretch"><aside class="notes">
+<img data-src="images/mlr3_ecosystem.png" class="quarto-figure quarto-figure-center r-stretch"></section>
+<section id="mlr3s-hello-world" class="slide level2">
+<h2><code>mlr3</code>’s “Hello World”</h2>
+<p><img data-src="images/mlr-logo-cropped.png" class="absolute" style="top: -50px; left: 1300px; width: 100px; "></p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li><code>tsk()</code> creates an example <code>Task</code>, where the goal is to predict the miles-per-galleon of cars</li>
+<li><code>lrn()</code> defines a simple regression tree <code>Learner</code> from the {rpart} package</li>
+<li><code>rsmp()</code> sets a <code>Resampling</code> strategy</li>
+<li><code>msr()</code> initializes an mlr3 performance <code>Measure</code></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>tsk_mtcars <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"mtcars"</span>)</span>
+<span id="cb1-2"><a href=""></a>lrn_tree <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.rpart"</span>)</span>
+<span id="cb1-3"><a href=""></a>rsmp_cv <span class="ot">=</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>)</span>
+<span id="cb1-4"><a href=""></a></span>
+<span id="cb1-5"><a href=""></a>rr <span class="ot">=</span> <span class="fu">resample</span>(</span>
+<span id="cb1-6"><a href=""></a>  <span class="at">task       =</span> tsk_mtcars,</span>
+<span id="cb1-7"><a href=""></a>  <span class="at">learner    =</span> lrn_tree,</span>
+<span id="cb1-8"><a href=""></a>  <span class="at">resampling =</span> rsmp_cv</span>
+<span id="cb1-9"><a href=""></a>)</span>
+<span id="cb1-10"><a href=""></a></span>
+<span id="cb1-11"><a href=""></a>rr<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msr</span>(<span class="st">"regr.mse"</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>regr.mse 
+      19 </code></pre>
+</div>
+</div>
+</div></div>
+<aside class="notes">
 <ul>
 <li>mlr3 is the core package defining the central infrastructure</li>
 <li>Many “learners”, i.e.&nbsp;statistical/ ML models are included in extensions, one of which is <code>mlr3torch</code>.</li>
@@ -477,96 +498,6 @@ Sebastian Fischer, Martin Binder, Prof.&nbsp;Dr.&nbsp;Bernd Bischl and others
           display:block!important;
       }</style></aside>
 </section>
-<section id="mlr3s-hello-world" class="slide level2">
-<h2><code>mlr3</code>’s “Hello World”</h2>
-<ul>
-<li>Create an example <code>Task</code>, where the goal is to predict the miles-per-galleon of cars</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb1-1"><a href=""></a>tsk_mtcars <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"mtcars"</span>)</span>
-<span id="cb1-2"><a href=""></a>tsk_mtcars</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;TaskRegr:mtcars&gt; (32 x 11): Motor Trends
-* Target: mpg
-* Properties: -
-* Features (10):
-  - dbl (10): am, carb, cyl, disp, drat, gear, hp, qsec, vs,
-    wt</code></pre>
-</div>
-</div>
-<ul>
-<li>Define a simple regression tree <code>Learner</code> from the {rpart} package</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb3-1"><a href=""></a>lrn_tree <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.rpart"</span>)</span>
-<span id="cb3-2"><a href=""></a>lrn_tree</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;LearnerRegrRpart:regr.rpart&gt;: Regression Tree
-* Model: -
-* Parameters: xval=0
-* Packages: mlr3, rpart
-* Predict Types:  [response]
-* Feature Types: logical, integer, numeric, factor, ordered
-* Properties: importance, missings, selected_features,
-  weights</code></pre>
-</div>
-</div>
-</section>
-<section id="mlr3s-hello-world-1" class="slide level2">
-<h2><code>mlr3</code>’s “Hello World”</h2>
-<div class="columns">
-<div class="column" style="width:50%;">
-<p><br> <br> <br></p>
-<div class="quarto-figure quarto-figure-center">
-<figure>
-<p><img data-src="images/mlr3book_figures-6.svg"></p>
-<figcaption>Illustration of three-fold Cross-Validation.</figcaption>
-</figure>
-</div>
-</div><div class="column" style="width:50%;">
-<ul>
-<li>Define the <code>Resampling</code> strategy</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb5-1"><a href=""></a>rsmp_cv <span class="ot">=</span> <span class="fu">rsmp</span>(<span class="st">"cv"</span>, <span class="at">folds =</span> <span class="dv">3</span>)</span>
-<span id="cb5-2"><a href=""></a>rsmp_cv</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;ResamplingCV&gt;: Cross-Validation
-* Iterations: 3
-* Instantiated: FALSE
-* Parameters: folds=3</code></pre>
-</div>
-</div>
-<ul>
-<li>Resample the learner on the task</li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb7-1"><a href=""></a>rr <span class="ot">=</span> <span class="fu">resample</span>(</span>
-<span id="cb7-2"><a href=""></a>  <span class="at">task       =</span> tsk_mtcars,</span>
-<span id="cb7-3"><a href=""></a>  <span class="at">learner    =</span> lrn_tree,</span>
-<span id="cb7-4"><a href=""></a>  <span class="at">resampling =</span> rsmp_cv</span>
-<span id="cb7-5"><a href=""></a>)</span>
-<span id="cb7-6"><a href=""></a>rr</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;ResampleResult&gt; with 3 resampling iterations
- task_id learner_id resampling_id iteration warnings errors
-  mtcars regr.rpart            cv         1        0      0
-  mtcars regr.rpart            cv         2        0      0
-  mtcars regr.rpart            cv         3        0      0</code></pre>
-</div>
-</div>
-<ul>
-<li>Evaluate the learner using the MSE <code>Measure</code></li>
-</ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb9-1"><a href=""></a>rr<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msr</span>(<span class="st">"regr.mse"</span>))</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>regr.mse 
-      19 </code></pre>
-</div>
-</div>
-</div></div>
-</section>
 <section id="dataflow-programming-with-mlr3pipelines" class="slide level2">
 <h2>Dataflow Programming with <code>mlr3pipelines</code></h2>
 <p><img data-src="images/pipelines_logo.png" class="absolute" style="top: -50px; left: 1300px; width: 100px; "></p>
@@ -584,15 +515,15 @@ Sebastian Fischer, Martin Binder, Prof.&nbsp;Dr.&nbsp;Bernd Bischl and others
 <li><code>PipeOp</code>s are created via <code>po()</code>, and combined using the chain operator <code>%&gt;&gt;%</code> <br></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb11-1"><a href=""></a><span class="fu">library</span>(mlr3pipelines)</span>
-<span id="cb11-2"><a href=""></a><span class="fu">library</span>(mlr3learners)</span>
-<span id="cb11-3"><a href=""></a></span>
-<span id="cb11-4"><a href=""></a>graph <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"encode"</span>, <span class="at">method =</span> <span class="st">"one-hot"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb11-5"><a href=""></a>  <span class="fu">po</span>(<span class="st">"pca"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb11-6"><a href=""></a>  <span class="fu">lrn</span>(<span class="st">"classif.log_reg"</span>)</span>
-<span id="cb11-7"><a href=""></a></span>
-<span id="cb11-8"><a href=""></a>learner <span class="ot">=</span> <span class="fu">as_learner</span>(graph)</span>
-<span id="cb11-9"><a href=""></a>learner</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb3-1"><a href=""></a><span class="fu">library</span>(mlr3pipelines)</span>
+<span id="cb3-2"><a href=""></a><span class="fu">library</span>(mlr3learners)</span>
+<span id="cb3-3"><a href=""></a></span>
+<span id="cb3-4"><a href=""></a>graph <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"encode"</span>, <span class="at">method =</span> <span class="st">"one-hot"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb3-5"><a href=""></a>  <span class="fu">po</span>(<span class="st">"pca"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb3-6"><a href=""></a>  <span class="fu">lrn</span>(<span class="st">"classif.log_reg"</span>)</span>
+<span id="cb3-7"><a href=""></a></span>
+<span id="cb3-8"><a href=""></a>learner <span class="ot">=</span> <span class="fu">as_learner</span>(graph)</span>
+<span id="cb3-9"><a href=""></a>learner</span></code></pre></div>
 </div>
 </div></div>
 <aside class="notes">
@@ -609,7 +540,7 @@ Sebastian Fischer, Martin Binder, Prof.&nbsp;Dr.&nbsp;Bernd Bischl and others
           overflow: hidden!important;
           display:block!important;
       }</style></aside>
-<aside><ol class="aside-footnotes"><li id="fn2"><p>M. Binder and B. Bischl et al, JMLR, 2021</p></li></ol></aside></section>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>M. Binder and B. Bischl et al, JMLR, 2021</p></li></ol></aside></section>
 <section id="torchs-hello-world" class="slide level2">
 <h2><code>torch</code>’s “Hello World”</h2>
 <p><img data-src="images/torch.png" class="absolute" style="top: -50px; left: 1300px; width: 100px; "></p>
@@ -625,25 +556,25 @@ Sebastian Fischer, Martin Binder, Prof.&nbsp;Dr.&nbsp;Bernd Bischl and others
 </ul>
 </div><div class="column" style="width:40%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb12-1"><a href=""></a><span class="fu">library</span>(torch)</span>
-<span id="cb12-2"><a href=""></a>x <span class="ot">=</span> <span class="fu">torch_tensor</span>(<span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-3"><a href=""></a>w <span class="ot">=</span> <span class="fu">torch_tensor</span>(<span class="dv">2</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-4"><a href=""></a>b <span class="ot">=</span> <span class="fu">torch_tensor</span>(<span class="dv">3</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb12-5"><a href=""></a>y <span class="ot">=</span> w <span class="sc">*</span> x <span class="sc">+</span> b</span>
-<span id="cb12-6"><a href=""></a>y<span class="sc">$</span><span class="fu">backward</span>()</span>
-<span id="cb12-7"><a href=""></a>x<span class="sc">$</span>grad</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb4-1"><a href=""></a><span class="fu">library</span>(torch)</span>
+<span id="cb4-2"><a href=""></a>x <span class="ot">=</span> <span class="fu">torch_tensor</span>(<span class="dv">1</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-3"><a href=""></a>w <span class="ot">=</span> <span class="fu">torch_tensor</span>(<span class="dv">2</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-4"><a href=""></a>b <span class="ot">=</span> <span class="fu">torch_tensor</span>(<span class="dv">3</span>, <span class="at">requires_grad =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-5"><a href=""></a>y <span class="ot">=</span> w <span class="sc">*</span> x <span class="sc">+</span> b</span>
+<span id="cb4-6"><a href=""></a>y<span class="sc">$</span><span class="fu">backward</span>()</span>
+<span id="cb4-7"><a href=""></a>x<span class="sc">$</span>grad</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  2
 [ CPUFloatType{1} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb14-1"><a href=""></a>w<span class="sc">$</span>grad</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb6-1"><a href=""></a>w<span class="sc">$</span>grad</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  1
 [ CPUFloatType{1} ]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb16-1"><a href=""></a>b<span class="sc">$</span>grad</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb8-1"><a href=""></a>b<span class="sc">$</span>grad</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>torch_tensor
  1
@@ -686,26 +617,26 @@ Sebastian Fischer, Martin Binder, Prof.&nbsp;Dr.&nbsp;Bernd Bischl and others
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb18-1"><a href=""></a><span class="fu">library</span>(mlr3torch)</span>
-<span id="cb18-2"><a href=""></a>lrn_mlp <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.mlp"</span>,</span>
-<span id="cb18-3"><a href=""></a>  <span class="co"># defining the architecture</span></span>
-<span id="cb18-4"><a href=""></a>  <span class="at">activation     =</span> torch<span class="sc">::</span>nn_relu,</span>
-<span id="cb18-5"><a href=""></a>  <span class="at">neurons        =</span> <span class="dv">10</span>,</span>
-<span id="cb18-6"><a href=""></a>  <span class="co"># training parameters</span></span>
-<span id="cb18-7"><a href=""></a>  <span class="at">batch_size     =</span> <span class="dv">32</span>,</span>
-<span id="cb18-8"><a href=""></a>  <span class="at">epochs         =</span> <span class="dv">100</span>,</span>
-<span id="cb18-9"><a href=""></a>  <span class="at">device         =</span> <span class="st">"cpu"</span>,</span>
-<span id="cb18-10"><a href=""></a>  <span class="co"># loss, optimizer, callbacks</span></span>
-<span id="cb18-11"><a href=""></a>  <span class="at">loss           =</span> <span class="fu">t_loss</span>(<span class="st">"mse"</span>),</span>
-<span id="cb18-12"><a href=""></a>  <span class="at">optimizer      =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.5</span>),</span>
-<span id="cb18-13"><a href=""></a>  <span class="at">callbacks      =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>)</span>
-<span id="cb18-14"><a href=""></a>)</span>
-<span id="cb18-15"><a href=""></a></span>
-<span id="cb18-16"><a href=""></a>design <span class="ot">=</span> <span class="fu">benchmark_grid</span>(</span>
-<span id="cb18-17"><a href=""></a>  tsk_mtcars, <span class="fu">list</span>(lrn_mlp, lrn_tree), rsmp_cv</span>
-<span id="cb18-18"><a href=""></a>)</span>
-<span id="cb18-19"><a href=""></a>bmr <span class="ot">=</span> <span class="fu">benchmark</span>(design)</span>
-<span id="cb18-20"><a href=""></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msr</span>(<span class="st">"regr.mse"</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb10-1"><a href=""></a><span class="fu">library</span>(mlr3torch)</span>
+<span id="cb10-2"><a href=""></a>lrn_mlp <span class="ot">=</span> <span class="fu">lrn</span>(<span class="st">"regr.mlp"</span>,</span>
+<span id="cb10-3"><a href=""></a>  <span class="co"># defining the architecture</span></span>
+<span id="cb10-4"><a href=""></a>  <span class="at">activation     =</span> torch<span class="sc">::</span>nn_relu,</span>
+<span id="cb10-5"><a href=""></a>  <span class="at">neurons        =</span> <span class="dv">10</span>,</span>
+<span id="cb10-6"><a href=""></a>  <span class="co"># training parameters</span></span>
+<span id="cb10-7"><a href=""></a>  <span class="at">batch_size     =</span> <span class="dv">32</span>,</span>
+<span id="cb10-8"><a href=""></a>  <span class="at">epochs         =</span> <span class="dv">100</span>,</span>
+<span id="cb10-9"><a href=""></a>  <span class="at">device         =</span> <span class="st">"cpu"</span>,</span>
+<span id="cb10-10"><a href=""></a>  <span class="co"># loss, optimizer, callbacks</span></span>
+<span id="cb10-11"><a href=""></a>  <span class="at">loss           =</span> <span class="fu">t_loss</span>(<span class="st">"mse"</span>),</span>
+<span id="cb10-12"><a href=""></a>  <span class="at">optimizer      =</span> <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.5</span>),</span>
+<span id="cb10-13"><a href=""></a>  <span class="at">callbacks      =</span> <span class="fu">t_clbk</span>(<span class="st">"history"</span>)</span>
+<span id="cb10-14"><a href=""></a>)</span>
+<span id="cb10-15"><a href=""></a></span>
+<span id="cb10-16"><a href=""></a>design <span class="ot">=</span> <span class="fu">benchmark_grid</span>(</span>
+<span id="cb10-17"><a href=""></a>  tsk_mtcars, <span class="fu">list</span>(lrn_mlp, lrn_tree), rsmp_cv</span>
+<span id="cb10-18"><a href=""></a>)</span>
+<span id="cb10-19"><a href=""></a>bmr <span class="ot">=</span> <span class="fu">benchmark</span>(design)</span>
+<span id="cb10-20"><a href=""></a>bmr<span class="sc">$</span><span class="fu">aggregate</span>(<span class="fu">msr</span>(<span class="st">"regr.mse"</span>))</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   nr task_id learner_id resampling_id iters regr.mse
 1:  1  mtcars   regr.mlp            cv     3       86
@@ -731,15 +662,15 @@ Hidden columns: resample_result</code></pre>
 <li>This <code>Graph</code> is fully interoperable with other <code>PipeOp</code>s</li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb20-1"><a href=""></a>mlp_graph <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb20-2"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_linear"</span>, <span class="at">out_features =</span> <span class="dv">20</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb20-3"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_relu"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb20-4"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_head"</span>) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb20-5"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_loss"</span>, <span class="fu">t_loss</span>(<span class="st">"cross_entropy"</span>)) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb20-6"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_optimizer"</span>, <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.1</span>)) <span class="sc">%&gt;&gt;%</span></span>
-<span id="cb20-7"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_model_classif"</span>, <span class="at">batch_size =</span> <span class="dv">16</span>, <span class="at">epochs =</span> <span class="dv">5</span>)</span>
-<span id="cb20-8"><a href=""></a></span>
-<span id="cb20-9"><a href=""></a>lrn_mlp_graph <span class="ot">=</span> <span class="fu">as_learner</span>(mlp_graph)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb12-1"><a href=""></a>mlp_graph <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb12-2"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_linear"</span>, <span class="at">out_features =</span> <span class="dv">20</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb12-3"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_relu"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb12-4"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_head"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb12-5"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_loss"</span>, <span class="fu">t_loss</span>(<span class="st">"cross_entropy"</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb12-6"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_optimizer"</span>, <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">0.1</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb12-7"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_model_classif"</span>, <span class="at">batch_size =</span> <span class="dv">16</span>, <span class="at">epochs =</span> <span class="dv">5</span>)</span>
+<span id="cb12-8"><a href=""></a></span>
+<span id="cb12-9"><a href=""></a>lrn_mlp_graph <span class="ot">=</span> <span class="fu">as_learner</span>(mlp_graph)</span></code></pre></div>
 </div>
 </div></div>
 </section>
@@ -755,30 +686,93 @@ Hidden columns: resample_result</code></pre>
 </ul>
 </div><div class="column" style="width:50%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb21-1"><a href=""></a>tsk_mnist <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"mnist"</span>)</span>
-<span id="cb21-2"><a href=""></a>tsk_mnist<span class="sc">$</span><span class="fu">head</span>(<span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb13-1"><a href=""></a>tsk_mnist <span class="ot">=</span> <span class="fu">tsk</span>(<span class="st">"mnist"</span>)</span>
+<span id="cb13-2"><a href=""></a>tsk_mnist<span class="sc">$</span><span class="fu">head</span>(<span class="dv">3</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   label           image
 1:     5 &lt;tnsr[1x28x28]&gt;
 2:     0 &lt;tnsr[1x28x28]&gt;
 3:     4 &lt;tnsr[1x28x28]&gt;</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb23-1"><a href=""></a>flattener <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"trafo_reshape"</span>, <span class="at">shape =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">28</span> <span class="sc">*</span> <span class="dv">28</span>))</span>
-<span id="cb23-2"><a href=""></a>flattener<span class="sc">$</span><span class="fu">train</span>(<span class="fu">list</span>(tsk_mnist))[[<span class="dv">1</span>L]]<span class="sc">$</span><span class="fu">head</span>(<span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb15-1"><a href=""></a>flattener <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"trafo_reshape"</span>, <span class="at">shape =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">28</span> <span class="sc">*</span> <span class="dv">28</span>))</span>
+<span id="cb15-2"><a href=""></a>flattener<span class="sc">$</span><span class="fu">train</span>(<span class="fu">list</span>(tsk_mnist))[[<span class="dv">1</span>L]]<span class="sc">$</span><span class="fu">head</span>(<span class="dv">3</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   label       image
 1:     5 &lt;tnsr[784]&gt;
 2:     0 &lt;tnsr[784]&gt;
 3:     4 &lt;tnsr[784]&gt;</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb25-1"><a href=""></a>lrn_flat_mlp <span class="ot">=</span> <span class="fu">as_learner</span>(flattener <span class="sc">%&gt;&gt;%</span> mlp_graph)</span>
-<span id="cb25-2"><a href=""></a>lrn_flat_mlp<span class="sc">$</span><span class="fu">train</span>(tsk_mnist)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb17-1"><a href=""></a>lrn_flat_mlp <span class="ot">=</span> <span class="fu">as_learner</span>(flattener <span class="sc">%&gt;&gt;%</span> mlp_graph)</span>
+<span id="cb17-2"><a href=""></a>lrn_flat_mlp<span class="sc">$</span><span class="fu">train</span>(tsk_mnist)</span></code></pre></div>
 </div>
 <p><br></p>
 </div></div>
 </section>
-<section id="integration-into-the-mlr3-ecosystem-hyperparameter-tuning" class="slide level2">
-<h2>Integration into the <code>mlr3</code> ecosystem: Hyperparameter Tuning</h2>
+<section id="multi-modal-data" class="slide level2">
+<h2>Multi Modal Data</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>For example, we might have some medical data about patients, as well as x-ray images</li>
+<li>Because <code>lazy_tensor</code>s are just vectors, they can be conveniently stored alongside tabular data</li>
+<li><code>mlr3torch</code> supports building neural networks with multiple inputs, e.g.&nbsp;each operating on different features</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb18-1"><a href=""></a>medical_task</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;TaskClassif:medical&gt; (100 x 4): Medical Diagnosis
+* Target: status
+* Properties: twoclass
+* Features (3):
+  - dbl (2): age, lesion_size
+  - lt (1): xray</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb20-1"><a href=""></a>medical_task<span class="sc">$</span><span class="fu">head</span>(<span class="dv">3</span>)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      status age lesion_size            xray
+1:    benign  NA        0.99 &lt;tnsr[3x64x64]&gt;
+2:    benign  21        0.56 &lt;tnsr[3x64x64]&gt;
+3: malignant  56        0.71 &lt;tnsr[3x64x64]&gt;</code></pre>
+</div>
+</div>
+</div></div>
+</section>
+<section id="multi-modal-data-1" class="slide level2">
+<h2>Multi Modal Data</h2>
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="images/complex-graph.png" class="quarto-figure quarto-figure-center"></p>
+</figure>
+</div>
+</div><div class="column" style="width:60%;">
+<p><br> <br></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb22-1"><a href=""></a>branch_num <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"select_1"</span>, <span class="at">selector =</span> <span class="fu">selector_type</span>(<span class="st">"numeric"</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-2"><a href=""></a>  <span class="fu">po</span>(<span class="st">"pca"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-3"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_ingress_num"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-4"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_linear"</span>, <span class="at">out_features =</span> <span class="dv">20</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-5"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_sigmoid"</span>)</span>
+<span id="cb22-6"><a href=""></a></span>
+<span id="cb22-7"><a href=""></a>branch_img <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"select_2"</span>, <span class="at">selector =</span> <span class="fu">selector_type</span>(<span class="st">"lazy_tensor"</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-8"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_ingress_ltnsr"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-9"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_conv2d"</span>, <span class="at">out_channels =</span> <span class="dv">3</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-10"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_relu"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-11"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_flatten"</span>)</span>
+<span id="cb22-12"><a href=""></a></span>
+<span id="cb22-13"><a href=""></a>graph <span class="ot">=</span> <span class="fu">po</span>(<span class="st">"imputeoor"</span>) <span class="sc">%&gt;&gt;%</span> <span class="fu">list</span>(branch_num, branch_img) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-14"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_merge_cat"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-15"><a href=""></a>  <span class="fu">po</span>(<span class="st">"nn_head"</span>) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-16"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_loss"</span>, <span class="fu">t_loss</span>(<span class="st">"cross_entropy"</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-17"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_optimizer"</span>, <span class="fu">t_opt</span>(<span class="st">"adam"</span>, <span class="at">lr =</span> <span class="fl">1e-4</span>)) <span class="sc">%&gt;&gt;%</span></span>
+<span id="cb22-18"><a href=""></a>  <span class="fu">po</span>(<span class="st">"torch_model_classif"</span>, <span class="at">batch_size =</span> <span class="dv">16</span>, <span class="at">epochs =</span> <span class="dv">50</span>)</span></code></pre></div>
+</div>
+</div></div>
+</section>
+<section id="hyperparameter-tuning" class="slide level2">
+<h2>Hyperparameter Tuning</h2>
 <div class="columns">
 <div class="column" style="width:40%;">
 <ul>
@@ -787,28 +781,28 @@ Hidden columns: resample_result</code></pre>
 </ul>
 </div><div class="column" style="width:60%;">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb26-1"><a href=""></a><span class="fu">library</span>(mlr3tuning)</span>
-<span id="cb26-2"><a href=""></a><span class="fu">library</span>(mlr3mbo)</span>
-<span id="cb26-3"><a href=""></a></span>
-<span id="cb26-4"><a href=""></a><span class="fu">as.data.table</span>(lrn_flat_mlp<span class="sc">$</span>param_set)[<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">12</span>), <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb23-1"><a href=""></a><span class="fu">library</span>(mlr3tuning)</span>
+<span id="cb23-2"><a href=""></a><span class="fu">library</span>(mlr3mbo)</span>
+<span id="cb23-3"><a href=""></a></span>
+<span id="cb23-4"><a href=""></a><span class="fu">as.data.table</span>(lrn_flat_mlp<span class="sc">$</span>param_set)[<span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">12</span>), <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                       id    class lower upper
 1: nn_linear.out_features ParamInt     1   Inf
 2:     torch_optimizer.lr ParamDbl     0   Inf</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb28-1"><a href=""></a>lrn_flat_mlp<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
-<span id="cb28-2"><a href=""></a>  <span class="at">nn_linear.out_features =</span> <span class="fu">to_tune</span>(<span class="dv">10</span>, <span class="dv">100</span>),</span>
-<span id="cb28-3"><a href=""></a>  <span class="at">torch_optimizer.lr =</span> <span class="fu">to_tune</span>(<span class="fl">1e-05</span>, <span class="fl">1e-03</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb28-4"><a href=""></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb25-1"><a href=""></a>lrn_flat_mlp<span class="sc">$</span>param_set<span class="sc">$</span><span class="fu">set_values</span>(</span>
+<span id="cb25-2"><a href=""></a>  <span class="at">nn_linear.out_features =</span> <span class="fu">to_tune</span>(<span class="dv">10</span>, <span class="dv">100</span>),</span>
+<span id="cb25-3"><a href=""></a>  <span class="at">torch_optimizer.lr =</span> <span class="fu">to_tune</span>(<span class="fl">1e-05</span>, <span class="fl">1e-03</span>, <span class="at">logscale =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb25-4"><a href=""></a>)</span></code></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb29-1"><a href=""></a><span class="fu">tune</span>(</span>
-<span id="cb29-2"><a href=""></a>  <span class="at">learner =</span> lrn_flat_mlp,</span>
-<span id="cb29-3"><a href=""></a>  <span class="at">task =</span> tsk_mnist,</span>
-<span id="cb29-4"><a href=""></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"mbo"</span>),</span>
-<span id="cb29-5"><a href=""></a>  <span class="at">term_evals =</span> <span class="dv">100</span>L,</span>
-<span id="cb29-6"><a href=""></a>  <span class="at">resampling =</span> <span class="fu">rsmp</span>(<span class="st">"holdout"</span>)</span>
-<span id="cb29-7"><a href=""></a>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb26-1"><a href=""></a><span class="fu">tune</span>(</span>
+<span id="cb26-2"><a href=""></a>  <span class="at">learner =</span> lrn_flat_mlp,</span>
+<span id="cb26-3"><a href=""></a>  <span class="at">task =</span> tsk_mnist,</span>
+<span id="cb26-4"><a href=""></a>  <span class="at">tuner =</span> <span class="fu">tnr</span>(<span class="st">"mbo"</span>),</span>
+<span id="cb26-5"><a href=""></a>  <span class="at">term_evals =</span> <span class="dv">100</span>L,</span>
+<span id="cb26-6"><a href=""></a>  <span class="at">resampling =</span> <span class="fu">rsmp</span>(<span class="st">"holdout"</span>)</span>
+<span id="cb26-7"><a href=""></a>)</span></code></pre></div>
 </div>
 </div></div>
 </section>
