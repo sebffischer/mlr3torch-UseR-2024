@@ -3,3 +3,5 @@ index_files
 /.quarto/
 _output
 **/.DS_Store
+.Rproj.user
+mlr3torch-UseR-2024.Rproj

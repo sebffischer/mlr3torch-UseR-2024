@@ -1,7 +1,7 @@
 ---
-pagettitle: "`mlr3torch`"
+pagetitle: "`mlr3torch`"
 subtitle: "Deep Learning in R with mlr3 and torch"
-author: "Sebastian Fischer, Martin Binder, Bernd Bischl and others"
+author: "Sebastian Fischer, Martin Binder, Bernd Bischl, Lukas Burk and others"
 bibliography: references.bib
 ---
 
@@ -11,7 +11,7 @@ bibliography: references.bib
 
 <hr>
 
-<h3> Sebastian Fischer, Martin Binder, Prof. Dr. Bernd Bischl and others</h3>
+<h3> Sebastian Fischer, Martin Binder, Prof. Dr. Bernd Bischl, Lukas Burk and others</h3>
 
 <h3> 2024-07-10 </h3>
 <br>
@@ -28,6 +28,7 @@ library(mlr3torch)
 library(mlr3pipelines)
 library(torch)
 library(mlr3mbo)
+library(mlr3tuning)
 options(
     datatable.print.class = FALSE,
     datatable.print.keys = FALSE,
@@ -58,12 +59,6 @@ knitr::opts_chunk$set(
 
 * It allows to easily build, train and evaluate deep learning models
 * GitHub: [https://github.com/mlr-org/mlr3torch](https://github.com/mlr-org/mlr3torch)
-
-:::{.notes}
-While we do show code, the focus in this presentation is on the conceptual part and most of it
-should be easily understandable without a focus on the code.
-:::
-
 
 ## Deep Learning in R
 
@@ -110,19 +105,6 @@ rr$aggregate(msr("regr.mse"))
 :::
 
 
-
-
-:::{.notes}
-* mlr3 is the core package defining the central infrastructure
-* Many "learners", i.e. statistical/ ML models are included in extensions, one of which is `mlr3torch`.
-* Evaluation of results is possible through many different performance measures and statistical analysis of benchmark results is also supported.
-* There are many different packages for hyperparamter optimization or feature selection
-* There are many extensions to non-standard data modalities such as spatial or functional data.
-* While the mlr3 core package only supports regression and classification, extensions exist for survival analysis, density estimation and clustering.
-
-:::
-
-
 ## Dataflow Programming with `mlr3pipelines`
 
 ![](images/pipelines_logo.png){.absolute top=-50 left=1300 width="100"}
@@ -149,13 +131,6 @@ learner = as_learner(graph)
 learner
 ```
 :::
-:::
-
-
-:::{.notes}
-mlr3 aims to provide a layer of abstraction for ML practitioners, allowing users to quickly swap one algorithm for another without needing expert knowledge of the underlying implementation. A unified interface for Task, Learner, and Measure objects means that complex benchmark and tuning experiments can be run in just a few lines of code for any off-the-shelf model, i.e., if you just want to run an experiment using the basic implementation from the underlying algorithm, we hope we have made this easy for you to do.
-
-mlr3pipelines (Binder et al. 2021) takes this modularity one step further, extending it to workflows that may also include data preprocessing (Chapter 9), building ensemble-models, or even more complicated meta-models. mlr3pipelines makes it possible to build individual steps within a Learner out of building blocks, so called `PipeOp`s.
 :::
 
 
@@ -213,7 +188,7 @@ b$grad
 :::{.columns}
 
 ::: {.column width="50%"}
-* On the right, we construct and resample a multi layer perceptron with one hidden layer of size 10 and `ReLU` activation
+* First, we construct and resample a multi layer perceptron with one hidden layer of size 10 and `ReLU` activation
 * Then, we define a simple benchmark experiment that compares the neural network with the decision tree from earlier
 * For this task, the neural network seems to be the wrong choice!
 :::
@@ -252,7 +227,7 @@ bmr$aggregate(msr("regr.mse"))
 <br>
 <br>
 
-* We can build the same architecture as before, by connecting `PipeOp`s in a `Graph`
+* We can build the same architecture as before by connecting `PipeOp`s in a `Graph`
 * This `Graph` is fully interoperable with other `PipeOp`s
 
 ```{r, eval = TRUE, echo = TRUE, output = FALSE}
@@ -275,41 +250,6 @@ lrn_mlp_graph$param_set$set_values(
 )
 lrn_mlp_graph$predict_sets = character()
 ```
-
-## Hyperparameter Tuning
-
-:::{.columns}
-:::{.column width="40%"}
-
-* The resulting `GraphLearner` has a parameter set representing all configuration options, which can be tuned!
-* Here, we optimize the latent dimension of the network and the learning rate of the optimizer using Bayesian Optimization from `mlr3mbo`.
-
-:::
-:::{.column width="60%"}
-```{r}
-library(mlr3tuning)
-library(mlr3mbo)
-
-as.data.table(lrn_flat_mlp$param_set)[c(5, 12), 1:4]
-lrn_flat_mlp$param_set$set_values(
-  nn_linear.out_features = to_tune(10, 100),
-  torch_optimizer.lr = to_tune(1e-05, 1e-03, logscale = TRUE)
-)
-```
-
-```{r, eval = FALSE}
-tune(
-  learner = lrn_flat_mlp,
-  task = tsk_mnist,
-  tuner = tnr("mbo"),
-  term_evals = 100L,
-  resampling = rsmp("holdout")
-)
-```
-
-:::
-:::
-
 
 ## Non-tabular data as `lazy_tensor`s
 
@@ -335,6 +275,52 @@ lrn_flat_mlp$train(tsk_mnist)
 :::
 :::
 
+## Hyperparameter Tuning
+
+:::{.columns}
+:::{.column width="40%"}
+
+* The resulting `GraphLearner` has a parameter set representing all configuration options, which can be tuned!
+* Optimize the latent dimension of the network and the learning rate of the optimizer using Bayesian Optimization from `mlr3mbo`.
+
+:::
+:::{.column width="60%"}
+```{r}
+library(mlr3tuning)
+library(mlr3mbo)
+
+as.data.table(lrn_flat_mlp$param_set)[c(5, 12), 1:4]
+lrn_flat_mlp$param_set$set_values(
+  nn_linear.out_features = to_tune(10, 100),
+  torch_optimizer.lr = to_tune(1e-05, 1e-03, logscale = TRUE)
+)
+```
+
+```{r, include = FALSE}
+tune(
+  learner = lrn_flat_mlp,
+  task = tsk_mnist$clone(deep = TRUE)$filter(1:10),
+  tuner = tnr("mbo"),
+  term_evals = 5L,
+  resampling = rsmp("holdout")
+)
+```
+
+```{r, eval = FALSE}
+tune(
+  learner = lrn_flat_mlp,
+  task = tsk_mnist,
+  tuner = tnr("mbo"),
+  term_evals = 100L,
+  resampling = rsmp("holdout")
+)
+```
+
+:::
+:::
+
+
+
 ## Multi Modal Data
 
 ```{r, include = FALSE}
@@ -352,9 +338,9 @@ medical_task = as_task_classif(dat, label = "Medical Diagnosis", target = "statu
 
 :::{.columns}
 ::: {.column width="50%"}
-* `mlr3torch` naturally supports multi-modal data and `lazy_tensor`s can be stored in `data.frame`s
-* On the right, we have some medical data about patients, as well as x-ray images
-* `mlr3torch` supports building neural networks with multiple inputs, e.g. each operating on different features
+* `mlr3torch` naturally supports multi-modal data as `lazy_tensor`s can be stored in `data.frame`s
+* Consider a classification task with some medical data about patients, as well as x-ray images
+* `mlr3torch` allows to easily build neural networks with multiple inputs, e.g. each operating on a different subset of features
 :::
 ::: {.column width="50%"}
 
