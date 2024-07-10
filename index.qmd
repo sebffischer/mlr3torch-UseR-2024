@@ -65,7 +65,7 @@ knitr::opts_chunk$set(
 * `tensorflow`, `keras` & `rtorch` - use python libraries through reticulate
 * `torch` - native R library
 * `luz` - higher level deep learning library built on top of `torch`
-* `brulee` - high level modeling functions for 'torch'
+* `brulee` - high level modeling functions for `torch`
 
 ## The `mlr3` Ecosystem
 
