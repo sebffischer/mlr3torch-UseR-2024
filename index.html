@@ -700,7 +700,7 @@ Hidden columns: resample_result</code></pre>
 <div class="column" style="width:50%;">
 <ul>
 <li><code>mlr3torch</code> naturally supports multi-modal data as <code>lazy_tensor</code>s can be stored in <code>data.frame</code>s</li>
-<li>Consider a classification task with some medical data about patients, as well as x-ray images</li>
+<li>Consider a classification task with some medical data about patients, as well as images</li>
 <li><code>mlr3torch</code> allows to easily build neural networks with multiple inputs, e.g.&nbsp;each operating on a different subset of features</li>
 </ul>
 </div><div class="column" style="width:50%;">
@@ -712,14 +712,14 @@ Hidden columns: resample_result</code></pre>
 * Properties: twoclass
 * Features (3):
   - dbl (2): age, lesion_size
-  - lt (1): xray</code></pre>
+  - lt (1): image</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines"><code class="sourceCode r"><span id="cb24-1"><a href=""></a>medical_task<span class="sc">$</span><span class="fu">head</span>(<span class="dv">3</span>)</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      status age lesion_size            xray
-1:    benign  NA        0.99 &lt;tnsr[3x64x64]&gt;
-2:    benign  21        0.56 &lt;tnsr[3x64x64]&gt;
-3: malignant  56        0.71 &lt;tnsr[3x64x64]&gt;</code></pre>
+<pre><code>      status age           image lesion_size
+1:    benign  NA &lt;tnsr[3x64x64]&gt;        0.99
+2:    benign  21 &lt;tnsr[3x64x64]&gt;        0.56
+3: malignant  56 &lt;tnsr[3x64x64]&gt;        0.71</code></pre>
 </div>
 </div>
 </div></div>
