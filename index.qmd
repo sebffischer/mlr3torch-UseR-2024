@@ -329,7 +329,7 @@ set.seed(1)
 dat = data.table(
   age = as.double(c(NA, sample(18:60, 99, replace = TRUE))),
   lesion_size = runif(100, 0.1, 1),
-  xray = as_lazy_tensor(torch_tensor(array(runif(100 * 3 * 64 * 64), dim = c(100, 3, 64, 64)))),
+  image = as_lazy_tensor(torch_tensor(array(runif(100 * 3 * 64 * 64), dim = c(100, 3, 64, 64)))),
   status = sample(c("malignant", "benign"), 100, TRUE, c(0.1, 0.9))
 )
 
@@ -340,7 +340,7 @@ medical_task = as_task_classif(dat, label = "Medical Diagnosis", target = "statu
 :::{.columns}
 ::: {.column width="50%"}
 * `mlr3torch` naturally supports multi-modal data as `lazy_tensor`s can be stored in `data.frame`s
-* Consider a classification task with some medical data about patients, as well as x-ray images
+* Consider a classification task with some medical data about patients, as well as images
 * `mlr3torch` allows to easily build neural networks with multiple inputs, e.g. each operating on a different subset of features
 :::
 ::: {.column width="50%"}
